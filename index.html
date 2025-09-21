@@ -41,7 +41,6 @@
             white-space: pre-wrap;
         }
         
-        /* 自定义模态框样式 */
         .custom-modal {
             display: none;
             position: fixed;
@@ -62,10 +61,8 @@
             padding: 1.5rem;
             max-width: 500px;
             width: 90%;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
         }
         
-        /* 预览模态框样式 */
         .preview-modal {
             display: none;
             position: fixed;
@@ -87,7 +84,6 @@
             width: 90%;
             max-width: 1200px;
             height: 80vh;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
             display: flex;
             flex-direction: column;
         }
@@ -101,7 +97,6 @@
             margin-top: 1rem;
         }
         
-        /* 通知样式 */
         .notification {
             position: fixed;
             top: 20px;
@@ -124,6 +119,57 @@
         @keyframes fadeOut {
             from { opacity: 1; }
             to { opacity: 0; }
+        }
+        
+        .platform-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .platform-badge i {
+            margin-right: 0.25rem;
+        }
+        
+        .icon-selector {
+            position: relative;
+        }
+        
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.5rem;
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 0.5rem;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.5rem;
+            position: absolute;
+            width: 100%;
+            z-index: 10;
+            display: none;
+        }
+        
+        .icon-item {
+            padding: 0.5rem;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 0.25rem;
+            transition: background 0.2s;
+        }
+        
+        .icon-item:hover {
+            background: rgba(59, 130, 246, 0.2);
+        }
+        
+        .icon-item i {
+            font-size: 1.25rem;
         }
     </style>
 </head>
@@ -153,7 +199,7 @@
     
     <!-- 通知 -->
     <div id="notification" class="notification">
-        <span id="notificationMessage">操作成功</span>
+        <span id="notificationMessage"></span>
     </div>
 
     <div class="container mx-auto px-4 py-8">
@@ -190,16 +236,99 @@
                     <label class="block text-sm font-medium mb-1">主题色</label>
                     <input type="color" id="themeColor" class="w-full p-1 bg-gray-800 rounded h-10" value="#3b82f6">
                 </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">背景色</label>
+                    <input type="color" id="bgColor" class="w-full p-1 bg-gray-800 rounded h-10" value="#0f172a">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">文字颜色</label>
+                    <input type="color" id="textColor" class="w-full p-1 bg-gray-800 rounded h-10" value="#f8fafc">
+                </div>
             </form>
+        </div>
+
+        <div class="glass-effect rounded-lg p-6 mb-8">
+            <h2 class="text-2xl font-bold mb-4">平台与架构支持</h2>
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">支持的平台</label>
+                <div id="platformsContainer" class="flex flex-wrap">
+                    <div class="platform-item mb-2 mr-2">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="platform-windows" class="mr-2" checked>
+                            <label for="platform-windows" class="flex items-center">
+                                <i class="fa fa-windows mr-1"></i> Windows
+                            </label>
+                        </div>
+                    </div>
+                    <div class="platform-item mb-2 mr-2">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="platform-mac" class="mr-2" checked>
+                            <label for="platform-mac" class="flex items-center">
+                                <i class="fa fa-apple mr-1"></i> macOS
+                            </label>
+                        </div>
+                    </div>
+                    <div class="platform-item mb-2 mr-2">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="platform-linux" class="mr-2" checked>
+                            <label for="platform-linux" class="flex items-center">
+                                <i class="fa fa-linux mr-1"></i> Linux
+                            </label>
+                        </div>
+                    </div>
+                    <div class="platform-item mb-2 mr-2">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="platform-android" class="mr-2">
+                            <label for="platform-android" class="flex items-center">
+                                <i class="fa fa-android mr-1"></i> Android
+                            </label>
+                        </div>
+                    </div>
+                    <div class="platform-item mb-2 mr-2">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="platform-ios" class="mr-2">
+                            <label for="platform-ios" class="flex items-center">
+                                <i class="fa fa-apple mr-1"></i> iOS
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-2">支持的架构</label>
+                <div id="architecturesContainer" class="flex flex-wrap">
+                    <div class="architecture-item mb-2 mr-2">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="arch-x64" class="mr-2" checked>
+                            <label for="arch-x64" class="flex items-center">
+                                <i class="fa fa-microchip mr-1"></i> x64
+                            </label>
+                        </div>
+                    </div>
+                    <div class="architecture-item mb-2 mr-2">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="arch-arm64" class="mr-2" checked>
+                            <label for="arch-arm64" class="flex items-center">
+                                <i class="fa fa-microchip mr-1"></i> ARM64
+                            </label>
+                        </div>
+                    </div>
+                    <div class="architecture-item mb-2 mr-2">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="arch-x86" class="mr-2">
+                            <label for="arch-x86" class="flex items-center">
+                                <i class="fa fa-microchip mr-1"></i> x86
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="glass-effect rounded-lg p-6 mb-8">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-2xl font-bold">功能卡片设置</h2>
                 <div class="flex space-x-3">
-                    <a href="https://fontawesome.com/v4/icons/" target="_blank" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded flex items-center">
-                        <i class="fa fa-list mr-2"></i>图标类名列表
-                    </a>
                     <button type="button" id="addCardButton" class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded">
                         <i class="fa fa-plus mr-2"></i>添加功能卡片
                     </button>
@@ -207,7 +336,7 @@
             </div>
             
             <div id="featureCardsContainer" class="space-y-4">
-                <!-- 初始卡片会被动态添加 -->
+                <!-- 功能卡片将在这里动态添加 -->
             </div>
         </div>
 
@@ -240,6 +369,179 @@
             const previewIframe = document.getElementById('previewIframe');
             const notification = document.getElementById('notification');
             const notificationMessage = document.getElementById('notificationMessage');
+            
+            // 常用图标列表
+            const popularIcons = [
+                'fa fa-meetup', 'fa fa-wpexplorer', 'fa fa-superpowers', 'fa fa-snowflake-o', 'fa fa-microchip',
+                'fa fa-eercast', 'fa fa-ravelry', 'fa fa-imdb', 'fa fa-etsy', 'fa fa-grav',
+                'fa fa-bandcamp', 'fa fa-times-rectangle-o', 'fa fa-times-rectangle', 'fa fa-window-restore',
+                'fa fa-window-minimize', 'fa fa-window-maximize', 'fa fa-podcast', 'fa fa-bathtub',
+                'fa fa-shower', 'fa fa-thermometer-0', 'fa fa-thermometer-1', 'fa fa-thermometer-2',
+                'fa fa-thermometer-3', 'fa fa-thermometer-4', 'fa fa-telegram', 'fa fa-free-code-camp',
+                'fa fa-quora', 'fa fa-drivers-license-o', 'fa fa-drivers-license', 'fa fa-id-badge',
+                'fa fa-user-o', 'fa fa-user-circle-o', 'fa fa-user-circle', 'fa fa-vcard-o',
+                'fa fa-vcard', 'fa fa-address-book-o', 'fa fa-address-book', 'fa fa-linode',
+                'fa fa-envelope-open-o', 'fa fa-envelope-open', 'fa fa-handshake-o', 'fa fa-fa',
+                'fa fa-google-plus-circle', 'fa fa-themeisle', 'fa fa-yoast', 'fa fa-first-order',
+                'fa fa-pied-piper', 'fa fa-snapchat-square', 'fa fa-snapchat-ghost', 'fa fa-snapchat',
+                'fa fa-viadeo-square', 'fa fa-viadeo', 'fa fa-low-vision', 'fa fa-signing',
+                'fa fa-glide-g', 'fa fa-glide', 'fa fa-deafness', 'fa fa-asl-interpreting',
+                'fa fa-assistive-listening-systems', 'fa fa-braille', 'fa fa-volume-control-phone',
+                'fa fa-audio-description', 'fa fa-blind', 'fa fa-question-circle-o', 'fa fa-wheelchair-alt',
+                'fa fa-universal-access', 'fa fa-envira', 'fa fa-wpforms', 'fa fa-wpbeginner',
+                'fa fa-gitlab', 'fa fa-percent', 'fa fa-bluetooth-b', 'fa fa-bluetooth',
+                'fa fa-hashtag', 'fa fa-shopping-basket', 'fa fa-shopping-bag', 'fa fa-stop-circle-o',
+                'fa fa-stop-circle', 'fa fa-pause-circle-o', 'fa fa-pause-circle', 'fa fa-scribd',
+                'fa fa-mixcloud', 'fa fa-product-hunt', 'fa fa-usb', 'fa fa-fort-awesome',
+                'fa fa-modx', 'fa fa-codiepie', 'fa fa-credit-card-alt', 'fa fa-edge',
+                'fa fa-reddit-alien', 'fa fa-fonticons', 'fa fa-black-tie', 'fa fa-vimeo',
+                'fa fa-houzz', 'fa fa-commenting-o', 'fa fa-commenting', 'fa fa-map',
+                'fa fa-map-o', 'fa fa-map-signs', 'fa fa-map-pin', 'fa fa-industry',
+                'fa fa-calendar-check-o', 'fa fa-calendar-times-o', 'fa fa-calendar-minus-o',
+                'fa fa-calendar-plus-o', 'fa fa-amazon', 'fa fa-500px', 'fa fa-contao',
+                'fa fa-tv', 'fa fa-internet-explorer', 'fa fa-opera', 'fa fa-firefox',
+                'fa fa-chrome', 'fa fa-safari', 'fa fa-wikipedia-w', 'fa fa-get-pocket',
+                'fa fa-odnoklassniki-square', 'fa fa-odnoklassniki', 'fa fa-tripadvisor',
+                'fa fa-gg-circle', 'fa fa-gg', 'fa fa-creative-commons', 'fa fa-registered',
+                'fa fa-trademark', 'fa fa-hand-peace-o', 'fa fa-hand-pointer-o', 'fa fa-hand-spock-o',
+                'fa fa-hand-lizard-o', 'fa fa-hand-scissors-o', 'fa fa-hand-stop-o', 'fa fa-hand-grab-o',
+                'fa fa-hourglass', 'fa fa-hourglass-3', 'fa fa-hourglass-2', 'fa fa-hourglass-1',
+                'fa fa-hourglass-o', 'fa fa-balance-scale', 'fa fa-clone', 'fa fa-cc-diners-club',
+                'fa fa-cc-jcb', 'fa fa-sticky-note-o', 'fa fa-sticky-note', 'fa fa-object-ungroup',
+                'fa fa-object-group', 'fa fa-i-cursor', 'fa fa-mouse-pointer', 'fa fa-battery-0',
+                'fa fa-battery-1', 'fa fa-battery-2', 'fa fa-battery-3', 'fa fa-battery-4',
+                'fa fa-expeditedssl', 'fa fa-opencart', 'fa fa-optin-monster', 'fa fa-yc',
+                'fa fa-medium', 'fa fa-subway', 'fa fa-train', 'fa fa-viacoin',
+                'fa fa-hotel', 'fa fa-user-times', 'fa fa-user-plus', 'fa fa-server',
+                'fa fa-whatsapp', 'fa fa-pinterest-p', 'fa fa-facebook-official', 'fa fa-genderless',
+                'fa fa-neuter', 'fa fa-mars-stroke-h', 'fa fa-mars-stroke-v', 'fa fa-mars-stroke',
+                'fa fa-venus-mars', 'fa fa-mars-double', 'fa fa-venus-double', 'fa fa-transgender-alt',
+                'fa fa-intersex', 'fa fa-mercury', 'fa fa-mars', 'fa fa-venus',
+                'fa fa-heartbeat', 'fa fa-street-view', 'fa fa-motorcycle', 'fa fa-user-secret',
+                'fa fa-ship', 'fa fa-diamond', 'fa fa-cart-arrow-down', 'fa fa-cart-plus',
+                'fa fa-skyatlas', 'fa fa-simplybuilt', 'fa fa-shirtsinbulk', 'fa fa-sellsy',
+                'fa fa-leanpub', 'fa fa-forumbee', 'fa fa-dashcube', 'fa fa-connectdevelop',
+                'fa fa-buysellads', 'fa fa-meanpath', 'fa fa-shekel', 'fa fa-cc',
+                'fa fa-angellist', 'fa fa-ioxhost', 'fa fa-bus', 'fa fa-bicycle',
+                'fa fa-toggle-on', 'fa fa-toggle-off', 'fa fa-lastfm-square', 'fa fa-lastfm',
+                'fa fa-line-chart', 'fa fa-pie-chart', 'fa fa-area-chart', 'fa fa-birthday-cake',
+                'fa fa-paint-brush', 'fa fa-eyedropper', 'fa fa-at', 'fa fa-copyright',
+                'fa fa-trash', 'fa fa-bell-slash-o', 'fa fa-bell-slash', 'fa fa-cc-stripe',
+                'fa fa-cc-paypal', 'fa fa-cc-amex', 'fa fa-cc-discover', 'fa fa-cc-mastercard',
+                'fa fa-cc-visa', 'fa fa-google-wallet', 'fa fa-paypal', 'fa fa-calculator',
+                'fa fa-wifi', 'fa fa-newspaper-o', 'fa fa-yelp', 'fa fa-twitch',
+                'fa fa-slideshare', 'fa fa-plug', 'fa fa-binoculars', 'fa fa-tty',
+                'fa fa-soccer-ball-o', 'fa fa-bomb', 'fa fa-share-alt-square', 'fa fa-share-alt',
+                'fa fa-sliders', 'fa fa-paragraph', 'fa fa-header', 'fa fa-circle-thin',
+                'fa fa-history', 'fa fa-send-o', 'fa fa-send', 'fa fa-wechat',
+                'fa fa-qq', 'fa fa-tencent-weibo', 'fa fa-y-combinator-square', 'fa fa-git',
+                'fa fa-git-square', 'fa fa-ge', 'fa fa-ra', 'fa fa-circle-o-notch',
+                'fa fa-life-bouy', 'fa fa-jsfiddle', 'fa fa-codepen', 'fa fa-vine',
+                'fa fa-file-code-o', 'fa fa-file-movie-o', 'fa fa-file-sound-o', 'fa fa-file-zip-o',
+                'fa fa-file-photo-o', 'fa fa-file-powerpoint-o', 'fa fa-file-excel-o', 'fa fa-file-word-o',
+                'fa fa-file-pdf-o', 'fa fa-database', 'fa fa-soundcloud', 'fa fa-deviantart',
+                'fa fa-spotify', 'fa fa-tree', 'fa fa-cab', 'fa fa-automobile',
+                'fa fa-recycle', 'fa fa-steam-square', 'fa fa-steam', 'fa fa-behance-square',
+                'fa fa-behance', 'fa fa-cubes', 'fa fa-cube', 'fa fa-spoon',
+                'fa fa-paw', 'fa fa-child', 'fa fa-building', 'fa fa-fax',
+                'fa fa-language', 'fa fa-joomla', 'fa fa-drupal', 'fa fa-pied-piper-alt',
+                'fa fa-pied-piper-pp', 'fa fa-digg', 'fa fa-delicious', 'fa fa-stumbleupon',
+                'fa fa-stumbleupon-circle', 'fa fa-reddit-square', 'fa fa-reddit', 'fa fa-google',
+                'fa fa-yahoo', 'fa fa-mortar-board', 'fa fa-institution', 'fa fa-openid',
+                'fa fa-wordpress', 'fa fa-envelope-square', 'fa fa-slack', 'fa fa-space-shuttle',
+                'fa fa-plus-square-o', 'fa fa-turkish-lira', 'fa fa-vimeo-square', 'fa fa-wheelchair',
+                'fa fa-dot-circle-o', 'fa fa-toggle-left', 'fa fa-arrow-circle-o-left', 'fa fa-arrow-circle-o-right',
+                'fa fa-stack-exchange', 'fa fa-pagelines', 'fa fa-renren', 'fa fa-weibo',
+                'fa fa-vk', 'fa fa-bug', 'fa fa-archive', 'fa fa-moon-o',
+                'fa fa-sun-o', 'fa fa-gittip', 'fa fa-male', 'fa fa-female',
+                'fa fa-trello', 'fa fa-foursquare', 'fa fa-skype', 'fa fa-dribbble',
+                'fa fa-linux', 'fa fa-android', 'fa fa-windows', 'fa fa-apple',
+                'fa fa-long-arrow-right', 'fa fa-long-arrow-left', 'fa fa-long-arrow-up', 'fa fa-long-arrow-down',
+                'fa fa-tumblr-square', 'fa fa-tumblr', 'fa fa-bitbucket-square', 'fa fa-bitbucket',
+                'fa fa-adn', 'fa fa-flickr', 'fa fa-instagram', 'fa fa-stack-overflow',
+                'fa fa-dropbox', 'fa fa-youtube-play', 'fa fa-xing-square', 'fa fa-xing',
+                'fa fa-youtube', 'fa fa-youtube-square', 'fa fa-thumbs-down', 'fa fa-thumbs-up',
+                'fa fa-sort-numeric-desc', 'fa fa-sort-numeric-asc', 'fa fa-sort-amount-desc', 'fa fa-sort-amount-asc',
+                'fa fa-sort-alpha-desc', 'fa fa-sort-alpha-asc', 'fa fa-file-text', 'fa fa-file',
+                'fa fa-bitcoin', 'fa fa-won', 'fa fa-ruble', 'fa fa-cny',
+                'fa fa-rupee', 'fa fa-dollar', 'fa fa-gbp', 'fa fa-euro',
+                'fa fa-toggle-right', 'fa fa-toggle-up', 'fa fa-toggle-down', 'fa fa-compass',
+                'fa fa-share-square', 'fa fa-external-link-square', 'fa fa-pencil-square', 'fa fa-check-square',
+                'fa fa-level-down', 'fa fa-level-up', 'fa fa-minus-square-o', 'fa fa-minus-square',
+                'fa fa-ticket', 'fa fa-play-circle', 'fa fa-rss-square', 'fa fa-ellipsis-v',
+                'fa fa-ellipsis-h', 'fa fa-bullseye', 'fa fa-unlock-alt', 'fa fa-anchor',
+                'fa fa-css3', 'fa fa-html5', 'fa fa-chevron-circle-down', 'fa fa-chevron-circle-up',
+                'fa fa-chevron-circle-right', 'fa fa-chevron-circle-left', 'fa fa-maxcdn', 'fa fa-rocket',
+                'fa fa-fire-extinguisher', 'fa fa-calendar-o', 'fa fa-shield', 'fa fa-microphone-slash',
+                'fa fa-microphone', 'fa fa-puzzle-piece', 'fa fa-eraser', 'fa fa-subscript',
+                'fa fa-superscript', 'fa fa-exclamation', 'fa fa-info', 'fa fa-question',
+                'fa fa-unlink', 'fa fa-code-fork', 'fa fa-crop', 'fa fa-location-arrow',
+                'fa fa-star-half-empty', 'fa fa-mail-reply-all', 'fa fa-code', 'fa fa-terminal',
+                'fa fa-flag-checkered', 'fa fa-flag-o', 'fa fa-keyboard-o', 'fa fa-gamepad',
+                'fa fa-meh-o', 'fa fa-frown-o', 'fa fa-smile-o', 'fa fa-folder-open-o',
+                'fa fa-folder-o', 'fa fa-github-alt', 'fa fa-mail-reply', 'fa fa-circle',
+                'fa fa-spinner', 'fa fa-quote-right', 'fa fa-quote-left', 'fa fa-circle-o',
+                'fa fa-mobile-phone', 'fa fa-tablet', 'fa fa-laptop', 'fa fa-desktop',
+                'fa fa-angle-down', 'fa fa-angle-up', 'fa fa-angle-right', 'fa fa-angle-left',
+                'fa fa-angle-double-down', 'fa fa-angle-double-up', 'fa fa-angle-double-right', 'fa fa-angle-double-left',
+                'fa fa-plus-square', 'fa fa-h-square', 'fa fa-beer', 'fa fa-fighter-jet',
+                'fa fa-medkit', 'fa fa-ambulance', 'fa fa-hospital-o', 'fa fa-building-o',
+                'fa fa-file-text-o', 'fa fa-cutlery', 'fa fa-coffee', 'fa fa-bell-o',
+                'fa fa-suitcase', 'fa fa-stethoscope', 'fa fa-user-md', 'fa fa-cloud-upload',
+                'fa fa-cloud-download', 'fa fa-exchange', 'fa fa-lightbulb-o', 'fa fa-paste',
+                'fa fa-umbrella', 'fa fa-sitemap', 'fa fa-flash', 'fa fa-comments-o',
+                'fa fa-comment-o', 'fa fa-dashboard', 'fa fa-legal', 'fa fa-rotate-left',
+                'fa fa-linkedin', 'fa fa-envelope', 'fa fa-sort-up', 'fa fa-sort-down',
+                'fa fa-unsorted', 'fa fa-columns', 'fa fa-caret-right', 'fa fa-caret-left',
+                'fa fa-caret-up', 'fa fa-caret-down', 'fa fa-money', 'fa fa-google-plus',
+                'fa fa-google-plus-square', 'fa fa-pinterest-square', 'fa fa-pinterest', 'fa fa-truck',
+                'fa fa-magic', 'fa fa-table', 'fa fa-underline', 'fa fa-strikethrough',
+                'fa fa-list-ol', 'fa fa-list-ul', 'fa fa-navicon', 'fa fa-square',
+                'fa fa-save', 'fa fa-paperclip', 'fa fa-copy', 'fa fa-cut',
+                'fa fa-flask', 'fa fa-cloud', 'fa fa-chain', 'fa fa-group',
+                'fa fa-arrows-alt', 'fa fa-briefcase', 'fa fa-filter', 'fa fa-tasks',
+                'fa fa-wrench', 'fa fa-globe', 'fa fa-arrow-circle-down', 'fa fa-arrow-circle-up',
+                'fa fa-arrow-circle-right', 'fa fa-arrow-circle-left', 'fa fa-hand-o-down', 'fa fa-hand-o-up',
+                'fa fa-hand-o-left', 'fa fa-hand-o-right', 'fa fa-certificate', 'fa fa-bell',
+                'fa fa-bullhorn', 'fa fa-hdd-o', 'fa fa-feed', 'fa fa-credit-card',
+                'fa fa-unlock', 'fa fa-github', 'fa fa-facebook-f', 'fa fa-twitter',
+                'fa fa-phone-square', 'fa fa-bookmark-o', 'fa fa-square-o', 'fa fa-phone',
+                'fa fa-lemon-o', 'fa fa-upload', 'fa fa-github-square', 'fa fa-trophy',
+                'fa fa-sign-in', 'fa fa-external-link', 'fa fa-thumb-tack', 'fa fa-linkedin-square',
+                'fa fa-sign-out', 'fa fa-heart-o', 'fa fa-star-half', 'fa fa-thumbs-o-down',
+                'fa fa-thumbs-o-up', 'fa fa-comments', 'fa fa-gears', 'fa fa-key',
+                'fa fa-camera-retro', 'fa fa-facebook-square', 'fa fa-twitter-square', 'fa fa-bar-chart-o',
+                'fa fa-arrows-h', 'fa fa-arrows-v', 'fa fa-folder-open', 'fa fa-folder',
+                'fa fa-shopping-cart', 'fa fa-retweet', 'fa fa-chevron-down', 'fa fa-chevron-up',
+                'fa fa-magnet', 'fa fa-comment', 'fa fa-random', 'fa fa-calendar',
+                'fa fa-plane', 'fa fa-warning', 'fa fa-eye-slash', 'fa fa-eye',
+                'fa fa-fire', 'fa fa-leaf', 'fa fa-gift', 'fa fa-exclamation-circle',
+                'fa fa-asterisk', 'fa fa-minus', 'fa fa-plus', 'fa fa-compress',
+                'fa fa-expand', 'fa fa-mail-forward', 'fa fa-arrow-down', 'fa fa-arrow-up',
+                'fa fa-arrow-right', 'fa fa-arrow-left', 'fa fa-ban', 'fa fa-check-circle-o',
+                'fa fa-times-circle-o', 'fa fa-crosshairs', 'fa fa-info-circle', 'fa fa-question-circle',
+                'fa fa-check-circle', 'fa fa-times-circle', 'fa fa-minus-circle', 'fa fa-plus-circle',
+                'fa fa-chevron-right', 'fa fa-chevron-left', 'fa fa-eject', 'fa fa-step-forward',
+                'fa fa-fast-forward', 'fa fa-forward', 'fa fa-stop', 'fa fa-pause',
+                'fa fa-play', 'fa fa-backward', 'fa fa-fast-backward', 'fa fa-step-backward',
+                'fa fa-arrows', 'fa fa-check-square-o', 'fa fa-share-square-o', 'fa fa-edit',
+                'fa fa-tint', 'fa fa-adjust', 'fa fa-map-marker', 'fa fa-pencil',
+                'fa fa-photo', 'fa fa-video-camera', 'fa fa-indent', 'fa fa-dedent',
+                'fa fa-list', 'fa fa-align-justify', 'fa fa-align-right', 'fa fa-align-center',
+                'fa fa-align-left', 'fa fa-text-width', 'fa fa-text-height', 'fa fa-italic',
+                'fa fa-bold', 'fa fa-font', 'fa fa-camera', 'fa fa-print',
+                'fa fa-bookmark', 'fa fa-book', 'fa fa-tags', 'fa fa-tag',
+                'fa fa-barcode', 'fa fa-qrcode', 'fa fa-volume-up', 'fa fa-volume-down',
+                'fa fa-volume-off', 'fa fa-headphones', 'fa fa-flag', 'fa fa-lock',
+                'fa fa-list-alt', 'fa fa-refresh', 'fa fa-rotate-right', 'fa fa-play-circle-o',
+                'fa fa-inbox', 'fa fa-arrow-circle-o-up', 'fa fa-arrow-circle-o-down', 'fa fa-download',
+                'fa fa-road', 'fa fa-clock-o', 'fa fa-file-o', 'fa fa-home',
+                'fa fa-trash-o', 'fa fa-gear', 'fa fa-signal', 'fa fa-power-off',
+                'fa fa-search-minus', 'fa fa-search-plus', 'fa fa-remove', 'fa fa-check',
+                'fa fa-th-list', 'fa fa-th', 'fa fa-th-large', 'fa fa-film',
+                'fa fa-user', 'fa fa-star-o', 'fa fa-star', 'fa fa-heart',
+                'fa fa-envelope-o', 'fa fa-search', 'fa fa-music', 'fa fa-glass'
+            ];
             
             // 显示通知
             function showNotification(message, isSuccess = true) {
@@ -294,48 +596,6 @@
                 hidePreviewModal();
             });
             
-            // 添加初始功能卡片
-            function addInitialCard() {
-                const container = document.getElementById('featureCardsContainer');
-                const newCard = document.createElement('div');
-                newCard.className = 'feature-card glass-effect p-4 rounded-lg';
-                newCard.innerHTML = `
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium mb-1">卡片标题</label>
-                            <input type="text" class="feature-title w-full p-2 bg-gray-800 rounded" value="强密钥生成">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-1">图标类名</label>
-                            <input type="text" class="feature-icon w-full p-2 bg-gray-800 rounded" value="fa fa-key">
-                        </div>
-                    </div>
-                    <div class="mt-4">
-                        <label class="block text-sm font-medium mb-1">版本信息</label>
-                        <input type="text" class="feature-version w-full p-2 bg-gray-800 rounded" value="v1.0+">
-                    </div>
-                    <div class="mt-4">
-                        <label class="block text-sm font-medium mb-1">功能描述</label>
-                        <textarea class="feature-description w-full p-2 bg-gray-800 rounded h-20">使用密码学安全的随机数生成器创建高熵密钥，支持多种密钥类型。</textarea>
-                    </div>
-                    <div class="mt-4 text-right">
-                        <button type="button" class="delete-card-btn px-3 py-1 bg-red-600 hover:bg-red-700 rounded">
-                            <i class="fa fa-trash mr-1"></i>删除
-                        </button>
-                    </div>
-                `;
-                
-                container.appendChild(newCard);
-                featureCardCount++;
-                
-                // 为初始卡片的删除按钮添加事件监听器
-                const deleteBtn = newCard.querySelector('.delete-card-btn');
-                deleteBtn.addEventListener('click', function() {
-                    currentDeleteButton = this;
-                    showCustomModal();
-                });
-            }
-            
             // 添加功能卡片
             document.getElementById('addCardButton').addEventListener('click', function() {
                 if (featureCardCount >= 9) {
@@ -350,12 +610,32 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium mb-1">卡片标题</label>
-                            <input type="text" class="feature-title w-full p-2 bg-gray-800 rounded" value="功能标题">
+                            <input type="text" class="feature-title w-full p-2 bg-gray-800 rounded" value="新功能">
                         </div>
-                        <div>
+                        <div class="icon-selector">
                             <label class="block text-sm font-medium mb-1">图标类名</label>
-                            <input type="text" class="feature-icon w-full p-2 bg-gray-800 rounded" value="fa fa-star">
+                            <div class="flex items-center">
+                                <input type="text" class="feature-icon w-full p-2 bg-gray-800 rounded" value="fa fa-star">
+                                <button type="button" class="select-icon-btn ml-2 px-3 py-1 bg-blue-600 hover:bg-blue-700 rounded">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </div>
+                            <div class="icon-grid">
+                                ${popularIcons.map(icon => `
+                                    <div class="icon-item" data-icon="${icon}">
+                                        <i class="${icon}"></i>
+                                    </div>
+                                `).join('')}
+                            </div>
                         </div>
+                    </div>
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium mb-1">背景颜色</label>
+                        <input type="color" class="feature-bg-color w-full p-1 bg-gray-800 rounded h-10" value="#3b82f6">
+                    </div>
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium mb-1">文字颜色</label>
+                        <input type="color" class="feature-text-color w-full p-1 bg-gray-800 rounded h-10" value="#ffffff">
                     </div>
                     <div class="mt-4">
                         <label class="block text-sm font-medium mb-1">版本信息</label>
@@ -363,7 +643,7 @@
                     </div>
                     <div class="mt-4">
                         <label class="block text-sm font-medium mb-1">功能描述</label>
-                        <textarea class="feature-description w-full p-2 bg-gray-800 rounded h-20">功能描述内容</textarea>
+                        <textarea class="feature-description w-full p-2 bg-gray-800 rounded h-20">这是一个新功能描述，详细说明了该功能的作用和优势。</textarea>
                     </div>
                     <div class="mt-4 text-right">
                         <button type="button" class="delete-card-btn px-3 py-1 bg-red-600 hover:bg-red-700 rounded">
@@ -382,20 +662,29 @@
                     currentDeleteButton = this;
                     showCustomModal();
                 });
-            });
-            
-            // 预览页面
-            document.getElementById('previewButton').addEventListener('click', function() {
-                if (featureCardCount === 0) {
-                    showNotification('请至少添加一个功能卡片', false);
-                    return;
-                }
                 
-                const htmlCode = generateHtmlCode();
-                const blob = new Blob([htmlCode], { type: 'text/html' });
-                const url = URL.createObjectURL(blob);
-                previewIframe.src = url;
-                showPreviewModal();
+                // 为图标选择器添加事件监听器
+                const selectIconBtn = newCard.querySelector('.select-icon-btn');
+                const iconGrid = newCard.querySelector('.icon-grid');
+                const iconInput = newCard.querySelector('.feature-icon');
+                
+                selectIconBtn.addEventListener('click', function() {
+                    iconGrid.style.display = iconGrid.style.display === 'none' ? 'grid' : 'none';
+                });
+                
+                newCard.querySelectorAll('.icon-item').forEach(item => {
+                    item.addEventListener('click', function() {
+                        iconInput.value = this.getAttribute('data-icon');
+                        iconGrid.style.display = 'none';
+                    });
+                });
+                
+                // 点击其他地方关闭图标选择器
+                document.addEventListener('click', function(e) {
+                    if (!newCard.contains(e.target) && e.target !== selectIconBtn) {
+                        iconGrid.style.display = 'none';
+                    }
+                });
             });
             
             // 生成HTML代码
@@ -407,6 +696,8 @@
                 const subTitle = document.getElementById('subTitle').value || '项目副标题';
                 const footerText = document.getElementById('footerText').value || '由项目团队开发';
                 const themeColor = document.getElementById('themeColor').value || '#3b82f6';
+                const bgColor = document.getElementById('bgColor').value || '#0f172a';
+                const textColor = document.getElementById('textColor').value || '#f8fafc';
                 
                 // 构建项目URL
                 const projectUrl = `https://github.com/${githubUsername}/${projectName}`;
@@ -420,43 +711,89 @@
                 };
                 
                 const themeColorRgb = hexToRgb(themeColor);
+                const bgColorRgb = hexToRgb(bgColor);
+                const textColorRgb = hexToRgb(textColor);
+                
+                // 获取选中的平台和架构
+                const platforms = [];
+                const architectures = [];
+                
+                document.querySelectorAll('#platformsContainer input[type="checkbox"]:checked').forEach(checkbox => {
+                    platforms.push(checkbox.nextElementSibling.textContent.trim());
+                });
+                
+                document.querySelectorAll('#architecturesContainer input[type="checkbox"]:checked').forEach(checkbox => {
+                    architectures.push(checkbox.nextElementSibling.textContent.trim());
+                });
                 
                 const featureCards = document.querySelectorAll('#featureCardsContainer .feature-card');
                 let featuresHtml = '';
                 
-                // 预定义的随机颜色列表
-                const colors = [
-                    'bg-red-500/20 text-red-400 border-red-500/20',
-                    'bg-blue-500/20 text-blue-400 border-blue-500/20',
-                    'bg-green-500/20 text-green-400 border-green-500/20',
-                    'bg-yellow-500/20 text-yellow-400 border-yellow-500/20',
-                    'bg-purple-500/20 text-purple-400 border-purple-500/20',
-                    'bg-pink-500/20 text-pink-400 border-pink-500/20',
-                    'bg-indigo-500/20 text-indigo-400 border-indigo-500/20',
-                    'bg-teal-500/20 text-teal-400 border-teal-500/20',
-                    'bg-orange-500/20 text-orange-400 border-orange-500/20'
-                ];
-                
                 featureCards.forEach((card, index) => {
-                    const title = card.querySelector('.feature-title').value || '功能标题';
-                    const icon = card.querySelector('.feature-icon').value || 'fa fa-star';
-                    const version = card.querySelector('.feature-version').value || 'v1.0+';
-                    const description = card.querySelector('.feature-description').value || '功能描述内容';
-                    
-                    // 使用预定义的颜色列表，循环使用
-                    const colorClass = colors[index % colors.length];
-                    const [bgClass, textClass, borderClass] = colorClass.split(' ');
+                    const title = card.querySelector('.feature-title').value;
+                    const icon = card.querySelector('.feature-icon').value;
+                    const bgColor = card.querySelector('.feature-bg-color').value;
+                    const textColor = card.querySelector('.feature-text-color').value;
+                    const version = card.querySelector('.feature-version').value;
+                    const description = card.querySelector('.feature-description').value;
                     
                     featuresHtml += `
-                <div class="glass-effect rounded-xl p-6 border ${borderClass} transition-all hover:-translate-y-1 hover:shadow-lg">
-                    <div class="w-14 h-14 rounded-lg ${bgClass} flex items-center justify-center mb-4">
-                        <i class="${icon} text-2xl ${textClass}"></i>
+                <div class="glass-effect rounded-xl p-6 border border-gray-700 transition-all hover:-translate-y-1 hover:shadow-lg">
+                    <div class="w-14 h-14 rounded-lg flex items-center justify-center mb-4" style="background-color: ${bgColor}">
+                        <i class="${icon} text-2xl" style="color: ${textColor}"></i>
                     </div>
                     <h3 class="text-xl font-bold mb-3">${title} ${version}</h3>
                     <p class="text-gray-400">${description}</p>
                 </div>
                 `;
                 });
+                
+                // 生成平台和架构徽章
+                let platformsHtml = '';
+                platforms.forEach(platform => {
+                    let iconClass = 'fa-question';
+                    if (platform.includes('Windows')) iconClass = 'fa-windows';
+                    if (platform.includes('macOS') || platform.includes('iOS')) iconClass = 'fa-apple';
+                    if (platform.includes('Linux')) iconClass = 'fa-linux';
+                    if (platform.includes('Android')) iconClass = 'fa-android';
+                    
+                    platformsHtml += `
+                    <span class="platform-badge bg-blue-500/20 text-blue-400">
+                        <i class="fa ${iconClass}"></i>
+                        ${platform}
+                    </span>
+                    `;
+                });
+                
+                // 如果没有选中的平台，添加默认内容
+                if (platforms.length === 0) {
+                    platformsHtml = `
+                    <span class="platform-badge bg-gray-500/20 text-gray-400">
+                        <i class="fa fa-question"></i>
+                        未选择平台
+                    </span>
+                    `;
+                }
+                
+                let architecturesHtml = '';
+                architectures.forEach(arch => {
+                    architecturesHtml += `
+                    <span class="platform-badge bg-purple-500/20 text-purple-400">
+                        <i class="fa fa-microchip"></i>
+                        ${arch}
+                    </span>
+                    `;
+                });
+                
+                // 如果没有选中的架构，添加默认内容
+                if (architectures.length === 0) {
+                    architecturesHtml = `
+                    <span class="platform-badge bg-gray-500/20 text-gray-400">
+                        <i class="fa fa-microchip"></i>
+                        未选择架构
+                    </span>
+                    `;
+                }
                 
                 return `<!DOCTYPE html>
 <html lang="zh-CN">
@@ -468,8 +805,10 @@
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <style>
         :root {
-            --bg-dark: #0f172a;
-            --text-light: #f8fafc;
+            --bg-dark: ${bgColor};
+            --bg-dark-rgb: ${bgColorRgb};
+            --text-light: ${textColor};
+            --text-light-rgb: ${textColorRgb};
             --text-gray: #94a3b8;
             --primary: ${themeColor};
             --primary-rgb: ${themeColorRgb};
@@ -483,15 +822,15 @@
         }
         
         .glass-effect {
-            background: rgba(15, 23, 42, 0.85);
+            background: rgba(var(--bg-dark-rgb), 0.85);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
         
         .tech-grid {
             background-image: 
-                linear-gradient(rgba(${themeColorRgb}, 0.1) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(${themeColorRgb}, 0.1) 1px, transparent 1px);
+                linear-gradient(rgba(var(--primary-rgb), 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(var(--primary-rgb), 0.1) 1px, transparent 1px);
             background-size: 20px 20px;
         }
         
@@ -505,6 +844,21 @@
         
         .btn-primary:hover {
             background-color: rgba(var(--primary-rgb), 0.9);
+        }
+        
+        .platform-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .platform-badge i {
+            margin-right: 0.25rem;
         }
     </style>
 </head>
@@ -547,6 +901,22 @@
             <h2 class="text-3xl font-bold text-center mb-8">功能特性</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 ${featuresHtml}
+            </div>
+        </div>
+    </section>
+
+    <section id="platforms" class="py-16 bg-gray-900/50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-8">支持平台与架构</h2>
+            <div class="glass-effect rounded-xl p-6">
+                <h3 class="text-xl font-bold mb-4">支持的操作系统</h3>
+                <div class="mb-6">
+                    ${platformsHtml}
+                </div>
+                <h3 class="text-xl font-bold mb-4">支持的处理器架构</h3>
+                <div>
+                    ${architecturesHtml}
+                </div>
             </div>
         </div>
     </section>
@@ -654,13 +1024,18 @@
 </html>`;
             }
             
+            // 预览页面
+            document.getElementById('previewButton').addEventListener('click', function() {
+                const htmlCode = generateHtmlCode();
+                const blob = new Blob([htmlCode], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                previewIframe.src = url;
+                showPreviewModal();
+                showNotification('页面预览已打开');
+            });
+            
             // 生成代码
             document.getElementById('generateCodeButton').addEventListener('click', function() {
-                if (featureCardCount === 0) {
-                    showNotification('请至少添加一个功能卡片', false);
-                    return;
-                }
-                
                 const htmlCode = generateHtmlCode();
                 document.getElementById('codeOutput').textContent = htmlCode;
                 document.getElementById('outputSection').classList.remove('hidden');
@@ -673,13 +1048,20 @@
                 navigator.clipboard.writeText(code).then(() => {
                     showNotification('代码已成功复制到剪贴板！');
                 }).catch(err => {
-                    showNotification('复制失败，请手动复制代码', false);
-                    console.error('复制失败:', err);
+                    // 如果浏览器不支持clipboard API，使用备用方法
+                    const textarea = document.createElement('textarea');
+                    textarea.value = code;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    try {
+                        document.execCommand('copy');
+                        showNotification('代码已复制到剪贴板');
+                    } catch (e) {
+                        showNotification('复制失败，请手动复制代码', false);
+                    }
+                    document.body.removeChild(textarea);
                 });
             });
-            
-            // 添加初始卡片
-            addInitialCard();
         });
     </script>
 </body>
