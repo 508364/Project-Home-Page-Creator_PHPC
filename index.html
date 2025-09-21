@@ -41,6 +41,7 @@
             white-space: pre-wrap;
         }
         
+        /* 自定义模态框样式 */
         .custom-modal {
             display: none;
             position: fixed;
@@ -48,7 +49,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.7);
             z-index: 1000;
             justify-content: center;
             align-items: center;
@@ -59,13 +60,75 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 0.5rem;
             padding: 1.5rem;
-            max-width: 400px;
+            max-width: 500px;
             width: 90%;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+        
+        /* 预览模态框样式 */
+        .preview-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .preview-content {
+            background: var(--bg-dark);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            width: 90%;
+            max-width: 1200px;
+            height: 80vh;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .preview-iframe {
+            flex-grow: 1;
+            width: 100%;
+            border: none;
+            background: white;
+            border-radius: 0.25rem;
+            margin-top: 1rem;
+        }
+        
+        /* 通知样式 */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 16px;
+            background: #10b981;
+            color: white;
+            border-radius: 4px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1001;
+            display: none;
+            animation: slideIn 0.3s, fadeOut 0.5s 2.5s forwards;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
         }
     </style>
 </head>
 <body class="tech-grid min-h-screen">
-    <!-- 自定义确认模态框 -->
+    <!-- 删除确认模态框 -->
     <div id="customConfirmModal" class="custom-modal">
         <div class="modal-content glass-effect">
             <h3 class="text-lg font-bold mb-4">确认删除</h3>
@@ -75,6 +138,22 @@
                 <button id="modalConfirmBtn" class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded">删除</button>
             </div>
         </div>
+    </div>
+    
+    <!-- 预览模态框 -->
+    <div id="previewModal" class="preview-modal">
+        <div class="preview-content glass-effect">
+            <div class="flex justify-between items-center">
+                <h3 class="text-lg font-bold">页面预览</h3>
+                <button id="closePreviewBtn" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded">关闭预览</button>
+            </div>
+            <iframe id="previewIframe" class="preview-iframe"></iframe>
+        </div>
+    </div>
+    
+    <!-- 通知 -->
+    <div id="notification" class="notification">
+        <span id="notificationMessage">操作成功</span>
     </div>
 
     <div class="container mx-auto px-4 py-8">
@@ -128,32 +207,14 @@
             </div>
             
             <div id="featureCardsContainer" class="space-y-4">
-                <div class="feature-card glass-effect p-4 rounded-lg">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium mb-1">卡片标题</label>
-                            <input type="text" class="feature-title w-full p-2 bg-gray-800 rounded" value="强密钥生成">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-1">图标类名</label>
-                            <input type="text" class="feature-icon w-full p-2 bg-gray-800 rounded" value="fa fa-key">
-                        </div>
-                    </div>
-                    <div class="mt-4">
-                        <label class="block text-sm font-medium mb-1">版本信息</label>
-                        <input type="text" class="feature-version w-full p-2 bg-gray-800 rounded" value="v1.0+">
-                    </div>
-                    <div class="mt-4">
-                        <label class="block text-sm font-medium mb-1">功能描述</label>
-                        <textarea class="feature-description w-full p-2 bg-gray-800 rounded h-20">使用密码学安全的随机数生成器创建高熵密钥，支持多种密钥类型。</textarea>
-                    </div>
-
-                    </div>
-                </div>
+                <!-- 初始卡片会被动态添加 -->
             </div>
         </div>
 
-        <div class="text-center">
+        <div class="text-center space-x-4">
+            <button id="previewButton" class="px-8 py-3 bg-indigo-600 hover:bg-indigo-700 rounded font-medium">
+                <i class="fa fa-eye mr-2"></i>预览页面
+            </button>
             <button id="generateCodeButton" class="px-8 py-3 bg-blue-600 hover:bg-blue-700 rounded font-medium">
                 <i class="fa fa-code mr-2"></i>生成代码
             </button>
@@ -172,11 +233,23 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            let featureCardCount = 1;
+            let featureCardCount = 0;
             let currentDeleteButton = null;
             const customModal = document.getElementById('customConfirmModal');
-            const modalConfirmBtn = document.getElementById('modalConfirmBtn');
-            const modalCancelBtn = document.getElementById('modalCancelBtn');
+            const previewModal = document.getElementById('previewModal');
+            const previewIframe = document.getElementById('previewIframe');
+            const notification = document.getElementById('notification');
+            const notificationMessage = document.getElementById('notificationMessage');
+            
+            // 显示通知
+            function showNotification(message, isSuccess = true) {
+                notificationMessage.textContent = message;
+                notification.style.display = 'block';
+                notification.style.backgroundColor = isSuccess ? '#10b981' : '#ef4444';
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                }, 3000);
+            }
             
             // 显示自定义模态框
             function showCustomModal() {
@@ -188,27 +261,85 @@
                 customModal.style.display = 'none';
             }
             
+            // 显示预览模态框
+            function showPreviewModal() {
+                previewModal.style.display = 'flex';
+            }
+            
+            // 隐藏预览模态框
+            function hidePreviewModal() {
+                previewModal.style.display = 'none';
+            }
+            
             // 确认删除按钮事件
-            modalConfirmBtn.addEventListener('click', function() {
+            document.getElementById('modalConfirmBtn').addEventListener('click', function() {
                 if (currentDeleteButton) {
                     const card = currentDeleteButton.closest('.feature-card');
                     card.remove();
                     featureCardCount--;
                     currentDeleteButton = null;
+                    showNotification('功能卡片已删除');
                 }
                 hideCustomModal();
             });
             
             // 取消按钮事件
-            modalCancelBtn.addEventListener('click', function() {
+            document.getElementById('modalCancelBtn').addEventListener('click', function() {
                 hideCustomModal();
                 currentDeleteButton = null;
             });
             
+            // 关闭预览按钮事件
+            document.getElementById('closePreviewBtn').addEventListener('click', function() {
+                hidePreviewModal();
+            });
+            
+            // 添加初始功能卡片
+            function addInitialCard() {
+                const container = document.getElementById('featureCardsContainer');
+                const newCard = document.createElement('div');
+                newCard.className = 'feature-card glass-effect p-4 rounded-lg';
+                newCard.innerHTML = `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">卡片标题</label>
+                            <input type="text" class="feature-title w-full p-2 bg-gray-800 rounded" value="强密钥生成">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">图标类名</label>
+                            <input type="text" class="feature-icon w-full p-2 bg-gray-800 rounded" value="fa fa-key">
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium mb-1">版本信息</label>
+                        <input type="text" class="feature-version w-full p-2 bg-gray-800 rounded" value="v1.0+">
+                    </div>
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium mb-1">功能描述</label>
+                        <textarea class="feature-description w-full p-2 bg-gray-800 rounded h-20">使用密码学安全的随机数生成器创建高熵密钥，支持多种密钥类型。</textarea>
+                    </div>
+                    <div class="mt-4 text-right">
+                        <button type="button" class="delete-card-btn px-3 py-1 bg-red-600 hover:bg-red-700 rounded">
+                            <i class="fa fa-trash mr-1"></i>删除
+                        </button>
+                    </div>
+                `;
+                
+                container.appendChild(newCard);
+                featureCardCount++;
+                
+                // 为初始卡片的删除按钮添加事件监听器
+                const deleteBtn = newCard.querySelector('.delete-card-btn');
+                deleteBtn.addEventListener('click', function() {
+                    currentDeleteButton = this;
+                    showCustomModal();
+                });
+            }
+            
             // 添加功能卡片
             document.getElementById('addCardButton').addEventListener('click', function() {
                 if (featureCardCount >= 9) {
-                    alert('最多只能添加9个功能卡片');
+                    showNotification('最多只能添加9个功能卡片', false);
                     return;
                 }
                 
@@ -243,41 +374,39 @@
                 
                 container.appendChild(newCard);
                 featureCardCount++;
+                showNotification('功能卡片已添加');
                 
                 // 为新卡片的删除按钮添加事件监听器
                 const deleteBtn = newCard.querySelector('.delete-card-btn');
                 deleteBtn.addEventListener('click', function() {
-                    if (featureCardCount <= 1) {
-                        alert('至少需要保留一个功能卡片');
-                        return;
-                    }
                     currentDeleteButton = this;
                     showCustomModal();
                 });
             });
             
-            // 为初始卡片的删除按钮添加事件监听器
-            const initialDeleteBtn = document.querySelector('.delete-card-btn');
-            if (initialDeleteBtn) {
-                initialDeleteBtn.addEventListener('click', function() {
-                    if (featureCardCount <= 1) {
-                        alert('至少需要保留一个功能卡片');
-                        return;
-                    }
-                    currentDeleteButton = this;
-                    showCustomModal();
-                });
-            }
+            // 预览页面
+            document.getElementById('previewButton').addEventListener('click', function() {
+                if (featureCardCount === 0) {
+                    showNotification('请至少添加一个功能卡片', false);
+                    return;
+                }
+                
+                const htmlCode = generateHtmlCode();
+                const blob = new Blob([htmlCode], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                previewIframe.src = url;
+                showPreviewModal();
+            });
             
-            // 生成代码
-            document.getElementById('generateCodeButton').addEventListener('click', function() {
-                const projectName = document.getElementById('projectName').value;
-                const githubUsername = document.getElementById('githubUsername').value;
-                const copyright = document.getElementById('copyright').value;
-                const mainTitle = document.getElementById('mainTitle').value;
-                const subTitle = document.getElementById('subTitle').value;
-                const footerText = document.getElementById('footerText').value;
-                const themeColor = document.getElementById('themeColor').value;
+            // 生成HTML代码
+            function generateHtmlCode() {
+                const projectName = document.getElementById('projectName').value || '项目名称';
+                const githubUsername = document.getElementById('githubUsername').value || 'username';
+                const copyright = document.getElementById('copyright').value || '© 2023 项目名称. 保留所有权利.';
+                const mainTitle = document.getElementById('mainTitle').value || '项目主标题';
+                const subTitle = document.getElementById('subTitle').value || '项目副标题';
+                const footerText = document.getElementById('footerText').value || '由项目团队开发';
+                const themeColor = document.getElementById('themeColor').value || '#3b82f6';
                 
                 // 构建项目URL
                 const projectUrl = `https://github.com/${githubUsername}/${projectName}`;
@@ -309,10 +438,10 @@
                 ];
                 
                 featureCards.forEach((card, index) => {
-                    const title = card.querySelector('.feature-title').value;
-                    const icon = card.querySelector('.feature-icon').value;
-                    const version = card.querySelector('.feature-version').value;
-                    const description = card.querySelector('.feature-description').value;
+                    const title = card.querySelector('.feature-title').value || '功能标题';
+                    const icon = card.querySelector('.feature-icon').value || 'fa fa-star';
+                    const version = card.querySelector('.feature-version').value || 'v1.0+';
+                    const description = card.querySelector('.feature-description').value || '功能描述内容';
                     
                     // 使用预定义的颜色列表，循环使用
                     const colorClass = colors[index % colors.length];
@@ -329,7 +458,7 @@
                 `;
                 });
                 
-                const htmlCode = `<!DOCTYPE html>
+                return `<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -523,21 +652,34 @@
     <\/script>
 </body>
 </html>`;
+            }
+            
+            // 生成代码
+            document.getElementById('generateCodeButton').addEventListener('click', function() {
+                if (featureCardCount === 0) {
+                    showNotification('请至少添加一个功能卡片', false);
+                    return;
+                }
                 
+                const htmlCode = generateHtmlCode();
                 document.getElementById('codeOutput').textContent = htmlCode;
                 document.getElementById('outputSection').classList.remove('hidden');
+                showNotification('代码已生成');
             });
             
             // 复制代码
             document.getElementById('copyCodeButton').addEventListener('click', function() {
                 const code = document.getElementById('codeOutput').textContent;
                 navigator.clipboard.writeText(code).then(() => {
-                    alert('代码已成功复制到剪贴板！');
+                    showNotification('代码已成功复制到剪贴板！');
                 }).catch(err => {
-                    alert('复制失败，请手动复制代码');
+                    showNotification('复制失败，请手动复制代码', false);
                     console.error('复制失败:', err);
                 });
             });
+            
+            // 添加初始卡片
+            addInitialCard();
         });
     </script>
 </body>
